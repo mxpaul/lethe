@@ -204,7 +204,7 @@ our $JSON=JSON::XS->new->utf8;
 		);
 		unless ($code == 200 && !$response->{error}) {
 			($log_method, $log_format) = ('error', '[ERR] %s END=%d D=%.6f V=%s e="%s"');
-			my $err = delete @_[2] // $response->{reason} // 'no reason specified';
+			my $err = delete $_[2] // $response->{reason} // 'no reason specified';
 			push @log_args, $err;
 		}
 		$self->{inj}{log}->$log_method($log_format, @log_args);
