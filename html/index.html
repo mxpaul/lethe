@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<script src="/js/angular.min.js"></script>
+<body>
+
+<div ng-app="Main" ng-controller="Send">
+	<form name="sender" novalidate ng-hide="messageLink">
+		<div><label for="message">Enter your message</label></div>
+		<textarea ng-model="message" name="message" cols="100" rows="15" required></textarea>
+		<div><input type="submit" ng-disabled="sender.$invalid" ng-click="saveMessage()"></div>
+	</form>
+	<div ng-show="response.error">ERROR! {{response.reason}}</div>
+	<div ng-if="messageLink">Success! <a href="{{messageLink}}">{{messageLink}}</a></div>
+	<div ng-if="messageLink"><input type="button" ng-click="reset()" value="Another message"></div>
+</div>
+
+<script>
+var app = angular.module("Main", []);
+app.controller('Send', function($scope, $http, $httpParamSerializerJQLike){
+	$scope.reset = function(){
+		$scope.message = "";
+		$scope.response = {error: 0, reason: ""};
+		$scope.messageLink = "";
+	}
+	$scope.saveMessage = function(){
+		$http({
+		 	method: "POST",
+		 	url: "/msg/add",
+		 	data: $httpParamSerializerJQLike({message: $scope.message}),
+		 	headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+		}).then(
+			function ifSuccess(response) {
+				$scope.response = response.data;
+				if ($scope.response.error == 0) {
+					$scope.messageLink = "/msg/get/" + $scope.response.message_id
+				}
+			}, function ifError(response) {
+				$scope.response = {error: 1, reason: response.statusText};
+				$scope.messageLink = "";
+			}
+		);
+		return false;
+	}
+	$scope.reset();
+	
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2 @@
+groupadd -r lethe
+useradd -r lethe -g lethe -d /var/lib/lethe

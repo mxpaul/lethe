@@ -1,0 +1,44 @@
+# The vncserver service unit file
+#
+# Quick HowTo:
+# 1. Copy this file to /etc/systemd/system/vncserver@.service
+# 2. Edit /etc/systemd/system/vncserver@.service, replacing wong
+#    with the actual user name. Leave the remaining lines of the file unmodified
+#    (ExecStart=/usr/sbin/runuser -l wong -c "/usr/bin/vncserver %i -geometry 1280x1024"
+#     PIDFile=/home/wong/.vnc/%H%i.pid)
+# 3. Run `systemctl daemon-reload`
+# 4. Run `systemctl enable vncserver@:<display>.service`
+#
+# DO NOT RUN THIS SERVICE if your local area network is
+# untrusted!  For a secure way of using VNC, you should
+# limit connections to the local host and then tunnel from
+# the machine you want to view VNC on (host A) to the machine
+# whose VNC output you want to view (host B)
+#
+# [user@hostA ~]$ ssh -v -C -L 590N:localhost:590M hostB
+#
+# this will open a connection on port 590N of your hostA to hostB's port 590M
+# (in fact, it ssh-connects to hostB and then connects to localhost (on hostB).
+# See the ssh man page for details on port forwarding)
+#
+# You can then point a VNC client on hostA at vncdisplay N of localhost and with
+# the help of ssh, you end up seeing what hostB makes available on port 590M
+#
+# Use "-nolisten tcp" to prevent X connections to your VNC server via TCP.
+#
+# Use "-localhost" to prevent remote VNC clients connecting except when
+# doing so through a secure tunnel.  See the "-via" option in the
+# `man vncviewer' manual page.
+
+
+[Unit]
+Description=Lethe service
+After=syslog.target network.target
+
+[Service]
+ExecStart=/usr/bin/perl -I /var/lib/lethe/lib/perl5 /var/lib/lethe/bin/lethe.pl
+User=lethe
+Group=lethe
+
+[Install]
+WantedBy=multi-user.target
